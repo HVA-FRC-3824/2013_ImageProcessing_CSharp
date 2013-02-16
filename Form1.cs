@@ -69,7 +69,7 @@ namespace ImageProcessing
                 image = capture.RetrieveBgrFrame();
 
                 // The SmoothGaussian makes the image much MUCH smoother.
-                image.SmoothGaussian(99, 99, 100.0, 100.0);
+                image.SmoothGaussian(299, 299, 250.0, 250.0);
                 // Convert the image to hsv
                 hsvImage = image.Convert<Hsv, byte>();
 
