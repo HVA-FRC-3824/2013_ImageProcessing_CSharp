@@ -52,6 +52,7 @@
             this.bar_servo = new System.Windows.Forms.TrackBar();
             this.label7 = new System.Windows.Forms.Label();
             this.btn_stop = new System.Windows.Forms.Button();
+            this.distance = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.bar_hMin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bar_vMin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bar_sMin)).BeginInit();
@@ -279,11 +280,21 @@
             this.btn_stop.UseVisualStyleBackColor = true;
             this.btn_stop.Click += new System.EventHandler(this.btn_stop_Click);
             // 
+            // distance
+            // 
+            this.distance.AutoSize = true;
+            this.distance.Location = new System.Drawing.Point(25, 382);
+            this.distance.Name = "distance";
+            this.distance.Size = new System.Drawing.Size(35, 13);
+            this.distance.TabIndex = 24;
+            this.distance.Text = "label8";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(923, 502);
+            this.Controls.Add(this.distance);
             this.Controls.Add(this.btn_stop);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.bar_servo);
@@ -311,6 +322,7 @@
             this.Name = "Form1";
             this.Text = "Image Processing";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
+            this.Load += new System.EventHandler(this.Form1_Load);
             ((System.ComponentModel.ISupportInitialize)(this.bar_hMin)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bar_vMin)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bar_sMin)).EndInit();
@@ -351,6 +363,7 @@
         private System.Windows.Forms.TrackBar bar_servo;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Button btn_stop;
+        private System.Windows.Forms.Label distance;
     }
 }
 
