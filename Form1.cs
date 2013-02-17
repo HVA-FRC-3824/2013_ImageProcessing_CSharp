@@ -36,7 +36,7 @@ namespace ImageProcessing
             InitializeComponent();
             processingThread = new Thread(processImages);
             NetworkTable.setClientMode();
-            NetworkTable.setIPAddress("10.78.5.176");
+            NetworkTable.setIPAddress("10.0.1.2");
 
             table = NetworkTable.getTable("SmartDashboard");
 
@@ -46,11 +46,10 @@ namespace ImageProcessing
         {
  
             //Capture capture = new Capture("rtsp://192.168.0.90:554/axis-media/media.amp");
-           // Capture capture = new Capture("rtsp://10.0.9.5:554/axis-media/media.amp");
+            //Capture capture = new Capture("rtsp://10.0.1.11:554/axis-media/media.amp");
 
 //  This is for testing via webcam image.
-Capture capture;  
-    capture = new Capture();
+            Capture capture = new Capture();
     Image<Bgr, Byte> frame = capture.QueryFrame();
 
             Image<Bgr, byte> image;
@@ -65,10 +64,11 @@ Capture capture;
             while (true)
             {
                 i++;
-                //capture.Grab();
-                //image = capture.RetrieveBgrFrame();
+                capture.Grab();
+                image = capture.RetrieveBgrFrame();
+                
                 //image = new Image<Bgr, Byte>("C:\\Users\\Administrator\\Documents\\Visual Studio 2010\\Projects\\ImageProcessing2013CSharp\\retroreflective.png");
-                image = new Image<Bgr, Byte>("C:\\Users\\Administrator\\Documents\\Visual Studio 2010\\Projects\\ImageProcessing2013CSharp\\Robot 3 - 26ft.png");
+                //image = new Image<Bgr, Byte>("C:\\Users\\Administrator\\Documents\\Visual Studio 2010\\Projects\\ImageProcessing2013CSharp\\Robot 3 - 26ft.png");
 
                 // The SmoothGaussian makes the image much MUCH smoother.
                 image.SmoothGaussian(299, 299, 250.0, 250.0);
@@ -140,22 +140,27 @@ Capture capture;
                 //Console.Write(minCenter);
                 //MessageBox.Show("Pos:" + (boxList[centerRectNum].X + boxList[centerRectNum].Width/2.0)+"distance: "+minCenter);
                 //MessageBox.Show("Off by:" + (boxList[centerRectNum].X + boxList[centerRectNum].Width / 2.0 - imageWidth/2));
-                SetText("Off by:" + (boxList[centerRectNum].X + boxList[centerRectNum].Width / 2.0 - imageWidth / 2));
+                
 
                 // Print out the information about the first rect
                 if (boxList.Count != 0)
                 {
-                    NetworkTable.getTable("SmartDashboard").putNumber("x", boxList[0].X);
-                    NetworkTable.getTable("SmartDashboard").putNumber("y", boxList[0].Y);
-                    NetworkTable.getTable("SmartDashboard").putNumber("h", boxList[0].Height);
-                    NetworkTable.getTable("SmartDashboard").putNumber("w", boxList[0].Width);
-                    NetworkTable.getTable("SmartDashboard").putNumber("servo", boxList[0].X / 320.0);
+                    double offset = (boxList[centerRectNum].X + boxList[centerRectNum].Width / 2.0 - imageWidth / 2);
+                    SetText("Off by:" + offset);
+                    NetworkTable.getTable("SmartDashboard").putNumber("camera offset", offset);
+                    //NetworkTable.getTable("SmartDashboard").putNumber("x", boxList[0].X);
+                    //NetworkTable.getTable("SmartDashboard").putNumber("y", boxList[0].Y);
+                    //NetworkTable.getTable("SmartDashboard").putNumber("h", boxList[0].Height);
+                    //NetworkTable.getTable("SmartDashboard").putNumber("w", boxList[0].Width);
+                    //NetworkTable.getTable("SmartDashboard").putNumber("servo", boxList[0].X / 320.0);
                 }
 
                 //table.putNumber("index", i);
-
-                im_image.Image = image.ToBitmap();
                 im_mask.Image = mask.ToBitmap();
+                
+                //im_image.Image = image.ToBitmap();
+                SetImage(image.ToBitmap());
+                Thread.Sleep((int)(1 / 30.0 * 1000));
 
             }
         }
@@ -211,6 +216,23 @@ Capture capture;
             else
             {
                 this.distance.Text = text;
+            }
+        }
+
+        delegate void SetImageCallback(Image image);
+        private void SetImage(Image image)
+        {
+            // InvokeRequired required compares the thread ID of the
+            // calling thread to the thread ID of the creating thread.
+            // If these threads are different, it returns true.
+            if (this.im_image.InvokeRequired)
+            {
+                SetImageCallback d = new SetImageCallback(SetImage);
+                this.Invoke(d, new object[] { image });
+            }
+            else
+            {
+                this.im_image.Image = image;
             }
         }
 
