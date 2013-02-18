@@ -67,13 +67,29 @@ namespace ImageProcessing
             hsvImage = image.Convert<Hsv, byte>();
 
             //mask = hsvImage.InRange(new Hsv(130.0 / 2, 25.0, 30.0), new Hsv(150.0 / 2, 255.0, 255.0));
-            //mask = hsvImage.InRange(new Hsv(hMin, sMin, vMin), new Hsv(hMax, sMax, vMax));
-            mask = hsvImage.InRange(new Hsv((int)(103 / 240.0f * 180),
-                        (int)(100 / 240.0f * 255),
-                        (int)(150 / 240.0f * 255)),
-                    new Hsv((int)(118 / 240.0f * 180),
-                        (int)(240 / 240.0f * 255),
-                        (int)(240 / 240.0f * 255)));
+                            // Threshold the HSV Image for targets
+                //readTrackBarDelegate readBar = new readTrackBarDelegate(readTrackBar);
+
+                //int hMin = (int)this.Invoke(readBar, bar_hMin);
+
+                //int hMax = (int)this.Invoke(readBar, bar_hMax);
+
+                //int sMin = (int)this.Invoke(readBar, bar_sMin);
+
+                //int sMax = (int)this.Invoke(readBar, bar_sMax);
+
+                //int vMin = (int)this.Invoke(readBar, bar_vMin);
+
+                //int vMax = (int)this.Invoke(readBar, bar_vMax);
+
+                int hMin = 0, hMax = 180, sMin = 0, sMax = 22, vMin = 172, vMax = 255;
+            mask = hsvImage.InRange(new Hsv(hMin, sMin, vMin), new Hsv(hMax, sMax, vMax));
+            //mask = hsvImage.InRange(new Hsv((int)(103 / 240.0f * 180),
+            //            (int)(100 / 240.0f * 255),
+            //            (int)(150 / 240.0f * 255)),
+            //        new Hsv((int)(118 / 240.0f * 180),
+            //            (int)(240 / 240.0f * 255),
+            //            (int)(240 / 240.0f * 255)));
             //Hsv hsv = new Hsv(
 
             // Filter image
@@ -94,7 +110,10 @@ namespace ImageProcessing
             for (Contour<Point> contours = mask.FindContours(); contours != null; contours = contours.HNext)
             {
                     contours.ApproxPoly(contours.Perimeter * 0.05);
-                    boxList.Add(contours.BoundingRectangle);
+                    Rectangle rect = contours.BoundingRectangle;
+                    //PointCollection.EllipseLeastSquareFitting()
+                    if (rect.Width>80 && rect.Height>10)
+                        boxList.Add(rect);
             }
 
             const double imageWidth = 320;
@@ -123,7 +142,8 @@ namespace ImageProcessing
             {
                 double offset = (boxList[centerRectNum].X + boxList[centerRectNum].Width / 2.0 - imageWidth / 2);
                 //SetText("Off by:" + offset);
-                NetworkTable.getTable("SmartDashboard").putNumber("camera offset", offset);
+                NetworkTable.getTable("SmartDashboard").putNumber("frisbee offset", offset);
+                NetworkTable.getTable("SmartDashboard").putNumber("frisbee size", boxList[centerRectNum].Width);
                 //NetworkTable.getTable("SmartDashboard").putNumber("x", boxList[0].X);
                 //NetworkTable.getTable("SmartDashboard").putNumber("y", boxList[0].Y);
                 //NetworkTable.getTable("SmartDashboard").putNumber("h", boxList[0].Height);
@@ -132,7 +152,8 @@ namespace ImageProcessing
             }
             else
             {
-                NetworkTable.getTable("SmartDashboard").putNumber("camera offset", 0);
+                NetworkTable.getTable("SmartDashboard").putNumber("frisbee offset", 0);
+                NetworkTable.getTable("SmartDashboard").putNumber("frisbee size", 0);
             }
 
             //table.putNumber("index", i);
