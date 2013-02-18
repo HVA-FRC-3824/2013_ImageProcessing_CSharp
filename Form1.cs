@@ -106,14 +106,27 @@ namespace ImageProcessing
 
             // List of boxes found
             List<Rectangle> boxList = new List<Rectangle>();
+            List<Ellipse> ellList = new List<Ellipse>();
 
             for (Contour<Point> contours = mask.FindContours(); contours != null; contours = contours.HNext)
             {
                     contours.ApproxPoly(contours.Perimeter * 0.05);
                     Rectangle rect = contours.BoundingRectangle;
-                    //PointCollection.EllipseLeastSquareFitting()
-                    if (rect.Width>80 && rect.Height>10)
+                    if (rect.Width > 80 && rect.Height > 10 && contours.Area>1000)
+                    {
                         boxList.Add(rect);
+                        image.Draw(contours, new Bgr(21, 255, 255), 2);
+                    }
+                    //ellipse not used other than for drawing - could be removed
+                    if (contours.Total >= 5) //required for ellipse fitting
+                    {
+                        PointF[] pts = new PointF[contours.Total];
+                        for (int i = 0; i < contours.Total; i++)
+                            pts[i] = new PointF(contours[i].X, contours[i].Y);
+                        Ellipse ell = PointCollection.EllipseLeastSquareFitting(pts);
+                        if (ell.MCvBox2D.size.Height > 10 && ell.MCvBox2D.size.Width > 80)
+                            ellList.Add(ell);
+                    }
             }
 
             const double imageWidth = 320;
@@ -131,7 +144,10 @@ namespace ImageProcessing
                     centerRectNum = n;
                 }
             }
-
+            for (int n = 0; n < ellList.Count; n++)
+            {
+                image.Draw(ellList[n], new Bgr(255, 21, 255), 2);
+            }
             //Console.Write(minCenter);
             //MessageBox.Show("Pos:" + (boxList[centerRectNum].X + boxList[centerRectNum].Width/2.0)+"distance: "+minCenter);
             //MessageBox.Show("Off by:" + (boxList[centerRectNum].X + boxList[centerRectNum].Width / 2.0 - imageWidth/2));
@@ -153,7 +169,7 @@ namespace ImageProcessing
             else
             {
                 NetworkTable.getTable("SmartDashboard").putNumber("frisbee offset", 0);
-                NetworkTable.getTable("SmartDashboard").putNumber("frisbee size", 0);
+                NetworkTable.getTable("SmartDashboard").putNumber("frisbee size", 320);  //assume it is too big to see
             }
 
             //table.putNumber("index", i);
