@@ -63,6 +63,7 @@ namespace ImageProcessing
             {
         //print error
             }
+            //processImageFrisbee();
         }
 
         private void processImageFrisbee()
@@ -245,7 +246,11 @@ namespace ImageProcessing
             for (Contour<Point> contours = mask.FindContours(); contours != null; contours = contours.HNext)
             {
                 contours.ApproxPoly(contours.Perimeter * 0.05);
-                boxList.Add(contours.BoundingRectangle);
+                Rectangle rect = contours.BoundingRectangle;
+                if (rect.Width > 40 && rect.Height > 10 && contours.Area > 400)
+                {
+                    boxList.Add(rect);
+                }
             }
 
             const double imageWidth = 320;
