@@ -21,7 +21,7 @@ namespace ImageProcessing
 {
     public partial class Form1 : Form
     {
-        //private Thread processingThread;
+        private Thread processingThread;
         private NetworkTable table;
         private             Capture capture;
         public delegate int readTrackBarDelegate(TrackBar bar);
@@ -36,12 +36,12 @@ namespace ImageProcessing
             InitializeComponent();
             //processingThread = new Thread(processImages);
             NetworkTable.setClientMode();
-            NetworkTable.setIPAddress("10.0.1.2");
+           NetworkTable.setIPAddress("10.0.1.2");
 
             table = NetworkTable.getTable("SmartDashboard");
-
-            // capture = new Capture("rtsp://192.168.0.90:554/axis-media/media.amp");
-            capture = new Capture("rtsp://10.0.1.11:554/axis-media/media.amp");
+            
+             //capture = new Capture("rtsp://192.168.0.90:554/axis-media/media.amp");
+            capture = new Capture("rtsp://10.0.1.5:554/axis-media/media.amp");
 
             //  This is for testing via webcam image.
             //capture = new Capture();
@@ -71,35 +71,32 @@ namespace ImageProcessing
  
             Image<Bgr, Byte> image = capture.QueryFrame();
 
+            int maxBoundingBoxWidth = 80;
+            int maxBoundingBoxHeight = 10;
+            int maxBoundingBoxArea = 1000;
             
             Image<Hsv, byte> hsvImage;
             Image<Gray, byte> mask;
 
-                
-            //image = new Image<Bgr, Byte>("C:\\Users\\Administrator\\Documents\\Visual Studio 2010\\Projects\\ImageProcessing2013CSharp\\retroreflective.png");
-            //image = new Image<Bgr, Byte>("C:\\Users\\Administrator\\Documents\\Visual Studio 2010\\Projects\\ImageProcessing2013CSharp\\Robot 3 - 26ft.png");
-
-            // The SmoothGaussian makes the image much MUCH smoother.
-            //image.SmoothGaussian(299, 299, 250.0, 250.0);
             // Convert the image to hsv
             hsvImage = image.Convert<Hsv, byte>();
-
-            //mask = hsvImage.InRange(new Hsv(130.0 / 2, 25.0, 30.0), new Hsv(150.0 / 2, 255.0, 255.0));
+/**
+            mask = hsvImage.InRange(new Hsv(130.0 / 2, 25.0, 30.0), new Hsv(150.0 / 2, 255.0, 255.0));
                             // Threshold the HSV Image for targets
-                //readTrackBarDelegate readBar = new readTrackBarDelegate(readTrackBar);
+                readTrackBarDelegate readBar = new readTrackBarDelegate(readTrackBar);
 
-                //int hMin = (int)this.Invoke(readBar, bar_hMin);
+                int hMin = (int)this.Invoke(readBar, bar_hMin);
 
-                //int hMax = (int)this.Invoke(readBar, bar_hMax);
+                int hMax = (int)this.Invoke(readBar, bar_hMax);
 
-                //int sMin = (int)this.Invoke(readBar, bar_sMin);
+                int sMin = (int)this.Invoke(readBar, bar_sMin);
 
-                //int sMax = (int)this.Invoke(readBar, bar_sMax);
+                int sMax = (int)this.Invoke(readBar, bar_sMax);
 
-                //int vMin = (int)this.Invoke(readBar, bar_vMin);
+                int vMin = (int)this.Invoke(readBar, bar_vMin);
 
-                //int vMax = (int)this.Invoke(readBar, bar_vMax);
-
+                int vMax = (int)this.Invoke(readBar, bar_vMax);
+            */
                 int hMin = 0, hMax = 180, sMin = 0, sMax = 22, vMin = 172, vMax = 255;
             mask = hsvImage.InRange(new Hsv(hMin, sMin, vMin), new Hsv(hMax, sMax, vMax));
             //mask = hsvImage.InRange(new Hsv((int)(103 / 240.0f * 180),
@@ -108,19 +105,10 @@ namespace ImageProcessing
             //        new Hsv((int)(118 / 240.0f * 180),
             //            (int)(240 / 240.0f * 255),
             //            (int)(240 / 240.0f * 255)));
-            //Hsv hsv = new Hsv(
 
             // Filter image
-            //mask._Erode(4);
             mask._Dilate(4);
             mask._Erode(4);
-
-                
-                
-            //      mask._SmoothGaussian(image, 2, 2, 1.5, 1.5);
-
-            // Find the Rectangles
-            //contours = mask.FindContours(Emgu.CV.CvEnum.CHAIN_APPROX_METHOD.CV_CHAIN_APPROX_SIMPLE, Emgu.CV.CvEnum.RETR_TYPE.CV_RETR_TREE);
 
             // List of boxes found
             List<Rectangle> boxList = new List<Rectangle>();
@@ -130,7 +118,9 @@ namespace ImageProcessing
             {
                     contours.ApproxPoly(contours.Perimeter * 0.05);
                     Rectangle rect = contours.BoundingRectangle;
-                    if (rect.Width > 80 && rect.Height > 10 && contours.Area>1000)
+                    if (rect.Width > maxBoundingBoxWidth 
+                       && rect.Height > maxBoundingBoxHeight 
+                         && contours.Area > maxBoundingBoxArea)
                     {
                         boxList.Add(rect);
                         image.Draw(contours, new Bgr(21, 255, 255), 2);
@@ -175,14 +165,9 @@ namespace ImageProcessing
             if (boxList.Count != 0)
             {
                 double offset = (boxList[centerRectNum].X + boxList[centerRectNum].Width / 2.0 - imageWidth / 2);
-                //SetText("Off by:" + offset);
                 NetworkTable.getTable("SmartDashboard").putNumber("frisbee offset", offset);
                 NetworkTable.getTable("SmartDashboard").putNumber("frisbee size", boxList[centerRectNum].Width);
-                //NetworkTable.getTable("SmartDashboard").putNumber("x", boxList[0].X);
-                //NetworkTable.getTable("SmartDashboard").putNumber("y", boxList[0].Y);
-                //NetworkTable.getTable("SmartDashboard").putNumber("h", boxList[0].Height);
-                //NetworkTable.getTable("SmartDashboard").putNumber("w", boxList[0].Width);
-                //NetworkTable.getTable("SmartDashboard").putNumber("servo", boxList[0].X / 320.0);
+
             }
             else
             {
@@ -190,11 +175,9 @@ namespace ImageProcessing
                 NetworkTable.getTable("SmartDashboard").putNumber("frisbee size", 320);  //assume it is too big to see
             }
 
-            //table.putNumber("index", i);
             im_mask.Image = mask.ToBitmap();
                 
             im_image.Image = image.ToBitmap();
-            //SetImage(image.ToBitmap());
             
 
             
@@ -209,12 +192,6 @@ namespace ImageProcessing
             Image<Hsv, byte> hsvImage;
             Image<Gray, byte> mask;
 
-
-            //image = new Image<Bgr, Byte>("C:\\Users\\Administrator\\Documents\\Visual Studio 2010\\Projects\\ImageProcessing2013CSharp\\retroreflective.png");
-            //image = new Image<Bgr, Byte>("C:\\Users\\Administrator\\Documents\\Visual Studio 2010\\Projects\\ImageProcessing2013CSharp\\Robot 3 - 26ft.png");
-
-            // The SmoothGaussian makes the image much MUCH smoother.
-            //image.SmoothGaussian(299, 299, 250.0, 250.0);
             // Convert the image to hsv
             hsvImage = image.Convert<Hsv, byte>();
 
@@ -226,16 +203,10 @@ namespace ImageProcessing
                     new Hsv((int)(118 / 240.0f * 180),
                         (int)(240 / 240.0f * 255),
                         (int)(240 / 240.0f * 255)));
-            //Hsv hsv = new Hsv(
-
             // Filter image
             //mask._Erode(4);
             mask._Dilate(4);
             mask._Erode(4);
-
-
-
-            //      mask._SmoothGaussian(image, 2, 2, 1.5, 1.5);
 
             // Find the Rectangles
             //contours = mask.FindContours(Emgu.CV.CvEnum.CHAIN_APPROX_METHOD.CV_CHAIN_APPROX_SIMPLE, Emgu.CV.CvEnum.RETR_TYPE.CV_RETR_TREE);
@@ -278,24 +249,16 @@ namespace ImageProcessing
             if (boxList.Count != 0)
             {
                 double offset = (boxList[centerRectNum].X + boxList[centerRectNum].Width / 2.0 - imageWidth / 2);
-                //SetText("Off by:" + offset);
                 NetworkTable.getTable("SmartDashboard").putNumber("camera offset", offset);
-                //NetworkTable.getTable("SmartDashboard").putNumber("x", boxList[0].X);
-                //NetworkTable.getTable("SmartDashboard").putNumber("y", boxList[0].Y);
-                //NetworkTable.getTable("SmartDashboard").putNumber("h", boxList[0].Height);
-                //NetworkTable.getTable("SmartDashboard").putNumber("w", boxList[0].Width);
-                //NetworkTable.getTable("SmartDashboard").putNumber("servo", boxList[0].X / 320.0);
             }
             else
             {
                 NetworkTable.getTable("SmartDashboard").putNumber("camera offset", 0);
             }
 
-            //table.putNumber("index", i);
             im_mask.Image = mask.ToBitmap();
 
             im_image.Image = image.ToBitmap();
-            //SetImage(image.ToBitmap());
 
 
 
