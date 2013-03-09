@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Windows.Forms;
 using edu.wpi.first.wpilibj.networktables;
 using edu.wpi.first.wpilibj.networktables2;
@@ -21,11 +22,18 @@ namespace ImageProcessing
 {
     public partial class Form1 : Form
     {
-        private Thread processingThread;
+        FileStream shotInformation = File.Create("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Image Saves\\shotData.txt");
+        
         private NetworkTable table;
         private             Capture pickup_Capture;
         private             Capture target_Capture;
         public delegate int readTrackBarDelegate(TrackBar bar);
+        private double[,] capturedData = new double[100,2];
+        string str_shot;
+        double shotRPM;
+        double shotAngle;
+        int shotCounter;
+        StringBuilder sb = new StringBuilder();
 
         public int readTrackBar(TrackBar bar)
         {
@@ -52,6 +60,7 @@ namespace ImageProcessing
             pickup_Capture = new Capture();
             //target_Capture = new Capture();
             Application.Idle += processImage;
+
         }
 
         private void processImage(object sender, EventArgs arg)
@@ -59,28 +68,6 @@ namespace ImageProcessing
 
             processImageTarget();
             processImageFrisbee();
-
-
-
-
-            /*
-            string target_type = NetworkTable.getTable("SmartDashboard").getString("Target Type");
-            if (target_type == "frisbee")
-            {
-                processImageFrisbee();
-            } 
-            else if (target_type == "target")
-            {
-                processImageTarget();
-            } 
-            else 
-            {
-        //print error
-            }
-            //processImageFrisbee();
-            */
-
-
         }
 
         private void processImageFrisbee()
@@ -97,31 +84,8 @@ namespace ImageProcessing
 
             // Convert the image to hsv
             hsvImage = image.Convert<Hsv, byte>();
-/**
-            mask = hsvImage.InRange(new Hsv(130.0 / 2, 25.0, 30.0), new Hsv(150.0 / 2, 255.0, 255.0));
-                            // Threshold the HSV Image for targets
-                readTrackBarDelegate readBar = new readTrackBarDelegate(readTrackBar);
-
-                int hMin = (int)this.Invoke(readBar, bar_hMin);
-
-                int hMax = (int)this.Invoke(readBar, bar_hMax);
-
-                int sMin = (int)this.Invoke(readBar, bar_sMin);
-
-                int sMax = (int)this.Invoke(readBar, bar_sMax);
-
-                int vMin = (int)this.Invoke(readBar, bar_vMin);
-
-                int vMax = (int)this.Invoke(readBar, bar_vMax);
-            */
                 int hMin = 0, hMax = 180, sMin = 0, sMax = 22, vMin = 172, vMax = 255;
             mask = hsvImage.InRange(new Hsv(hMin, sMin, vMin), new Hsv(hMax, sMax, vMax));
-            //mask = hsvImage.InRange(new Hsv((int)(103 / 240.0f * 180),
-            //            (int)(100 / 240.0f * 255),
-            //            (int)(150 / 240.0f * 255)),
-            //        new Hsv((int)(118 / 240.0f * 180),
-            //            (int)(240 / 240.0f * 255),
-            //            (int)(240 / 240.0f * 255)));
 
             // Filter image
             mask._Dilate(4);
@@ -281,6 +245,20 @@ namespace ImageProcessing
 
         }
 
+        private void captureImageData()
+        {
+            shotRPM = NetworkTable.getTable("SmartDashboard").getNumber("Last Shot Shooter RPM");
+            shotAngle = NetworkTable.getTable("SmartDashboard").getNumber("Last Shot Shooter Angle");
+            shotCounter = (int)NetworkTable.getTable("SmartDashboard").getNumber("Shot Counter");
+
+            capturedData[shotCounter, 0] = shotRPM;
+            capturedData[shotCounter, 1] = shotAngle;
+            str_shot = "" + capturedData[shotCounter, 0] + " " + capturedData[shotCounter, 1] + "\n";
+
+
+            
+        }
+
         private void btn_start_Click(object sender, EventArgs e)
         {
 //            processingThread.Start();
@@ -356,6 +334,7 @@ namespace ImageProcessing
         {
             //processingThread.Interrupt();
             //processingThread.Abort();
+
         }
 
         private void btn_stop_Click(object sender, EventArgs e)
