@@ -23,7 +23,8 @@ namespace ImageProcessing
     {
         private Thread processingThread;
         private NetworkTable table;
-        private             Capture capture;
+        private             Capture pickup_Capture;
+        private             Capture target_Capture;
         public delegate int readTrackBarDelegate(TrackBar bar);
 
         public int readTrackBar(TrackBar bar)
@@ -41,15 +42,28 @@ namespace ImageProcessing
             table = NetworkTable.getTable("SmartDashboard");
             
              //capture = new Capture("rtsp://192.168.0.90:554/axis-media/media.amp");
-            capture = new Capture("rtsp://10.0.1.5:554/axis-media/media.amp");
+
+            // Setup Cameras to these IP addresses
+            // Using two cameras gets rid of having to swap between both types of image processing
+            //pickup_Capture = new Capture("rtsp://10.0.1.5:554/axis-media/media.amp");
+            target_Capture = new Capture("rtsp://192.168.0.90:554/axis-media/media.amp");
 
             //  This is for testing via webcam image.
-            //capture = new Capture();
+            pickup_Capture = new Capture();
+            //target_Capture = new Capture();
             Application.Idle += processImage;
         }
 
         private void processImage(object sender, EventArgs arg)
         {
+
+            processImageTarget();
+            processImageFrisbee();
+
+
+
+
+            /*
             string target_type = NetworkTable.getTable("SmartDashboard").getString("Target Type");
             if (target_type == "frisbee")
             {
@@ -64,12 +78,15 @@ namespace ImageProcessing
         //print error
             }
             //processImageFrisbee();
+            */
+
+
         }
 
         private void processImageFrisbee()
         {
  
-            Image<Bgr, Byte> image = capture.QueryFrame();
+            Image<Bgr, Byte> image = pickup_Capture.QueryFrame();
 
             int maxBoundingBoxWidth = 80;
             int maxBoundingBoxHeight = 10;
@@ -175,9 +192,9 @@ namespace ImageProcessing
                 NetworkTable.getTable("SmartDashboard").putNumber("frisbee size", 320);  //assume it is too big to see
             }
 
-            im_mask.Image = mask.ToBitmap();
+            im_mask_frisbee.Image = mask.ToBitmap();
                 
-            im_image.Image = image.ToBitmap();
+            im_image_frisbee.Image = image.ToBitmap();
             
 
             
@@ -186,7 +203,7 @@ namespace ImageProcessing
         private void processImageTarget()
         {
 
-            Image<Bgr, Byte> image = capture.QueryFrame();
+            Image<Bgr, Byte> image = target_Capture.QueryFrame();
 
 
             Image<Hsv, byte> hsvImage;
@@ -256,9 +273,9 @@ namespace ImageProcessing
                 NetworkTable.getTable("SmartDashboard").putNumber("camera offset", 0);
             }
 
-            im_mask.Image = mask.ToBitmap();
+            im_mask_target.Image = mask.ToBitmap();
 
-            im_image.Image = image.ToBitmap();
+            im_image_target.Image = image.ToBitmap();
 
 
 
@@ -302,21 +319,21 @@ namespace ImageProcessing
         #endregion
 
         delegate void SetTextCallback(string text);
-        private void SetText(string text)
-        {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
-            if (this.distance.InvokeRequired)
-            {
-                SetTextCallback d = new SetTextCallback(SetText);
-                this.Invoke(d, new object[] { text });
-            }
-            else
-            {
-                this.distance.Text = text;
-            }
-        }
+        //private void SetText(string text)
+        //{
+        //    // InvokeRequired required compares the thread ID of the
+        //    // calling thread to the thread ID of the creating thread.
+        //    // If these threads are different, it returns true.
+        //    if (this.distance.InvokeRequired)
+        //    {
+        //        SetTextCallback d = new SetTextCallback(SetText);
+        //        this.Invoke(d, new object[] { text });
+        //    }
+        //    else
+        //    {
+        //        this.distance.Text = text;
+        //    }
+        //}
 
         delegate void SetImageCallback(Image image);
         private void SetImage(Image image)
@@ -324,20 +341,15 @@ namespace ImageProcessing
             // InvokeRequired required compares the thread ID of the
             // calling thread to the thread ID of the creating thread.
             // If these threads are different, it returns true.
-            if (this.im_image.InvokeRequired)
+            if (this.im_image_target.InvokeRequired)
             {
                 SetImageCallback d = new SetImageCallback(SetImage);
                 this.Invoke(d, new object[] { image });
             }
             else
             {
-                this.im_image.Image = image;
+                this.im_image_target.Image = image;
             }
-        }
-
-        private void bar_servo_ValueChanged(object sender, EventArgs e)
-        {
-            //table.putNumber("servo", bar_servo.Value / 100.0);
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -352,6 +364,11 @@ namespace ImageProcessing
         }
 
         private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
         {
 
         }

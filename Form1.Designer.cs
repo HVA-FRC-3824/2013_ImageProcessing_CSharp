@@ -41,27 +41,27 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.bar_hMax = new System.Windows.Forms.TrackBar();
-            this.im_mask = new System.Windows.Forms.PictureBox();
-            this.im_image = new System.Windows.Forms.PictureBox();
+            this.im_mask_target = new System.Windows.Forms.PictureBox();
+            this.im_image_target = new System.Windows.Forms.PictureBox();
             this.lb_hMin = new System.Windows.Forms.Label();
             this.lb_sMin = new System.Windows.Forms.Label();
             this.lb_vMin = new System.Windows.Forms.Label();
             this.lb_hMax = new System.Windows.Forms.Label();
             this.lb_sMax = new System.Windows.Forms.Label();
             this.lb_vMax = new System.Windows.Forms.Label();
-            this.bar_servo = new System.Windows.Forms.TrackBar();
-            this.label7 = new System.Windows.Forms.Label();
             this.btn_stop = new System.Windows.Forms.Button();
-            this.distance = new System.Windows.Forms.Label();
+            this.im_image_frisbee = new System.Windows.Forms.PictureBox();
+            this.im_mask_frisbee = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.bar_hMin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bar_vMin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bar_sMin)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bar_vMax)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bar_sMax)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.bar_hMax)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.im_mask)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.im_image)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.bar_servo)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.im_mask_target)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.im_image_target)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.im_image_frisbee)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.im_mask_frisbee)).BeginInit();
             this.SuspendLayout();
             // 
             // btn_start
@@ -182,21 +182,21 @@
             this.bar_hMax.TabIndex = 7;
             this.bar_hMax.ValueChanged += new System.EventHandler(this.bar_hMax_ValueChanged);
             // 
-            // im_mask
+            // im_mask_target
             // 
-            this.im_mask.Location = new System.Drawing.Point(591, 258);
-            this.im_mask.Name = "im_mask";
-            this.im_mask.Size = new System.Drawing.Size(320, 240);
-            this.im_mask.TabIndex = 13;
-            this.im_mask.TabStop = false;
+            this.im_mask_target.Location = new System.Drawing.Point(749, 13);
+            this.im_mask_target.Name = "im_mask_target";
+            this.im_mask_target.Size = new System.Drawing.Size(320, 240);
+            this.im_mask_target.TabIndex = 13;
+            this.im_mask_target.TabStop = false;
             // 
-            // im_image
+            // im_image_target
             // 
-            this.im_image.Location = new System.Drawing.Point(591, 12);
-            this.im_image.Name = "im_image";
-            this.im_image.Size = new System.Drawing.Size(320, 240);
-            this.im_image.TabIndex = 14;
-            this.im_image.TabStop = false;
+            this.im_image_target.Location = new System.Drawing.Point(315, 13);
+            this.im_image_target.Name = "im_image_target";
+            this.im_image_target.Size = new System.Drawing.Size(320, 240);
+            this.im_image_target.TabIndex = 14;
+            this.im_image_target.TabStop = false;
             // 
             // lb_hMin
             // 
@@ -252,24 +252,6 @@
             this.lb_vMax.TabIndex = 20;
             this.lb_vMax.Text = "0";
             // 
-            // bar_servo
-            // 
-            this.bar_servo.Location = new System.Drawing.Point(52, 317);
-            this.bar_servo.Maximum = 100;
-            this.bar_servo.Name = "bar_servo";
-            this.bar_servo.Size = new System.Drawing.Size(220, 45);
-            this.bar_servo.TabIndex = 21;
-            this.bar_servo.ValueChanged += new System.EventHandler(this.bar_servo_ValueChanged);
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(14, 317);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(35, 13);
-            this.label7.TabIndex = 22;
-            this.label7.Text = "Servo";
-            // 
             // btn_stop
             // 
             this.btn_stop.Location = new System.Drawing.Point(15, 235);
@@ -280,32 +262,39 @@
             this.btn_stop.UseVisualStyleBackColor = true;
             this.btn_stop.Click += new System.EventHandler(this.btn_stop_Click);
             // 
-            // distance
+            // im_image_frisbee
             // 
-            this.distance.AutoSize = true;
-            this.distance.Location = new System.Drawing.Point(25, 382);
-            this.distance.Name = "distance";
-            this.distance.Size = new System.Drawing.Size(35, 13);
-            this.distance.TabIndex = 24;
-            this.distance.Text = "label8";
+            this.im_image_frisbee.Location = new System.Drawing.Point(315, 271);
+            this.im_image_frisbee.Name = "im_image_frisbee";
+            this.im_image_frisbee.Size = new System.Drawing.Size(320, 240);
+            this.im_image_frisbee.TabIndex = 24;
+            this.im_image_frisbee.TabStop = false;
+            this.im_image_frisbee.Click += new System.EventHandler(this.pictureBox1_Click);
+            // 
+            // im_mask_frisbee
+            // 
+            this.im_mask_frisbee.Location = new System.Drawing.Point(749, 271);
+            this.im_mask_frisbee.Name = "im_mask_frisbee";
+            this.im_mask_frisbee.Size = new System.Drawing.Size(320, 240);
+            this.im_mask_frisbee.TabIndex = 25;
+            this.im_mask_frisbee.TabStop = false;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(923, 502);
-            this.Controls.Add(this.distance);
+            this.ClientSize = new System.Drawing.Size(1097, 528);
+            this.Controls.Add(this.im_mask_frisbee);
+            this.Controls.Add(this.im_image_frisbee);
             this.Controls.Add(this.btn_stop);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.bar_servo);
             this.Controls.Add(this.lb_vMax);
             this.Controls.Add(this.lb_sMax);
             this.Controls.Add(this.lb_hMax);
             this.Controls.Add(this.lb_vMin);
             this.Controls.Add(this.lb_sMin);
             this.Controls.Add(this.lb_hMin);
-            this.Controls.Add(this.im_image);
-            this.Controls.Add(this.im_mask);
+            this.Controls.Add(this.im_image_target);
+            this.Controls.Add(this.im_mask_target);
             this.Controls.Add(this.bar_vMax);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.bar_sMax);
@@ -329,9 +318,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.bar_vMax)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bar_sMax)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.bar_hMax)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.im_mask)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.im_image)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.bar_servo)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.im_mask_target)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.im_image_target)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.im_image_frisbee)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.im_mask_frisbee)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -352,18 +342,17 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TrackBar bar_hMax;
-        private System.Windows.Forms.PictureBox im_mask;
-        private System.Windows.Forms.PictureBox im_image;
+        private System.Windows.Forms.PictureBox im_mask_target;
+        private System.Windows.Forms.PictureBox im_image_target;
         private System.Windows.Forms.Label lb_hMin;
         private System.Windows.Forms.Label lb_sMin;
         private System.Windows.Forms.Label lb_vMin;
         private System.Windows.Forms.Label lb_hMax;
         private System.Windows.Forms.Label lb_sMax;
         private System.Windows.Forms.Label lb_vMax;
-        private System.Windows.Forms.TrackBar bar_servo;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Button btn_stop;
-        private System.Windows.Forms.Label distance;
+        private System.Windows.Forms.PictureBox im_image_frisbee;
+        private System.Windows.Forms.PictureBox im_mask_frisbee;
     }
 }
 
