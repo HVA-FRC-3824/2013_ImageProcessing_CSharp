@@ -275,8 +275,8 @@ namespace ImageProcessing
                 str_shot = "" + shotCounter + "\t" + capturedData[shotCounter, 0] + "\t" + capturedData[shotCounter, 1] + "\n";
 
                   // System.IO.File.WriteAllText(@"C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Image Saves\\shotData" + shotCounter + ".txt", str_shot);
-
-                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Image Saves\\shotData.txt", true))
+                -
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Shot Information\\shotData.txt", true))
                 {
                     file.WriteLine(str_shot);
                 }  
