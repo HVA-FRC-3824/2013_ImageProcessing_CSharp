@@ -22,17 +22,18 @@ namespace ImageProcessing
 {
     public partial class Form1 : Form
     {
-        FileStream shotInformation = File.Create("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Image Saves\\shotData.txt");
+       // FileStream shotInformation = File.Create("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Image Saves\\shotData.txt");
         
         private NetworkTable table;
         private             Capture pickup_Capture;
         private             Capture target_Capture;
         public delegate int readTrackBarDelegate(TrackBar bar);
-        private double[,] capturedData = new double[100,2];
+        private double[,] capturedData = new double[250,2];
         string str_shot;
-        double shotRPM;
-        double shotAngle;
-        int shotCounter;
+        double shotRPM = 0;
+        double shotAngle = 0;
+        int lastShotCounter;
+        int shotCounter = 0;
         StringBuilder sb = new StringBuilder();
 
         public int readTrackBar(TrackBar bar)
@@ -48,16 +49,22 @@ namespace ImageProcessing
            NetworkTable.setIPAddress("10.0.1.2");
 
             table = NetworkTable.getTable("SmartDashboard");
-            
+
+            // The next three lines are for testing purposes only!
+            NetworkTable.getTable("SmartDashboard").putNumber("Last Shot Shooter RPM", 0);
+            NetworkTable.getTable("SmartDashboard").putNumber("Last Shot Shooter Angle", 0);
+            NetworkTable.getTable("SmartDashboard").putNumber("Shot Counter", 0);
+
              //capture = new Capture("rtsp://192.168.0.90:554/axis-media/media.amp");
 
             // Setup Cameras to these IP addresses
             // Using two cameras gets rid of having to swap between both types of image processing
             //pickup_Capture = new Capture("rtsp://10.0.1.5:554/axis-media/media.amp");
-            target_Capture = new Capture("rtsp://192.168.0.90:554/axis-media/media.amp");
+            //target_Capture = new Capture("rtsp://192.168.0.90:554/axis-media/media.amp");
 
             //  This is for testing via webcam image.
             pickup_Capture = new Capture();
+            target_Capture = new Capture();
             //target_Capture = new Capture();
             Application.Idle += processImage;
 
@@ -68,6 +75,7 @@ namespace ImageProcessing
 
             processImageTarget();
             processImageFrisbee();
+            captureImageData();
         }
 
         private void processImageFrisbee()
@@ -247,14 +255,32 @@ namespace ImageProcessing
 
         private void captureImageData()
         {
-            shotRPM = NetworkTable.getTable("SmartDashboard").getNumber("Last Shot Shooter RPM");
-            shotAngle = NetworkTable.getTable("SmartDashboard").getNumber("Last Shot Shooter Angle");
-            shotCounter = (int)NetworkTable.getTable("SmartDashboard").getNumber("Shot Counter");
+            //shotRPM = NetworkTable.getTable("SmartDashboard").getNumber("Last Shot Shooter RPM");
+            //shotAngle = NetworkTable.getTable("SmartDashboard").getNumber("Last Shot Shooter Angle");
 
-            capturedData[shotCounter, 0] = shotRPM;
-            capturedData[shotCounter, 1] = shotAngle;
-            str_shot = "" + capturedData[shotCounter, 0] + " " + capturedData[shotCounter, 1] + "\n";
+            // the next two lines are in the correct order. DO NOT CHANGE!
+            lastShotCounter = shotCounter;
+            //shotCounter = (int)NetworkTable.getTable("SmartDashboard").getNumber("Shot Counter");
 
+            // The next three lines are for testing purposes only!
+            shotCounter++;
+            shotRPM += 1000;
+            shotAngle += 2;
+
+            if (lastShotCounter < shotCounter)
+            {
+                capturedData[shotCounter, 0] = shotRPM;
+                capturedData[shotCounter, 1] = shotAngle;
+
+                str_shot = "" + shotCounter + "\t" + capturedData[shotCounter, 0] + "\t" + capturedData[shotCounter, 1] + "\n";
+
+                  // System.IO.File.WriteAllText(@"C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Image Saves\\shotData" + shotCounter + ".txt", str_shot);
+
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Image Saves\\shotData.txt", true))
+                {
+                    file.WriteLine(str_shot);
+                }  
+            }
 
             
         }
@@ -352,4 +378,6 @@ namespace ImageProcessing
 
         }
     }
+
 }
+
