@@ -33,7 +33,8 @@ namespace ImageProcessing
         double shotRPM = 0;
         double shotAngle = 0;
         int lastShotCounter;
-        int shotCounter = 0;
+        int shotCounter = -1;
+        int matchNumber = 1;
         StringBuilder sb = new StringBuilder();
 
         public int readTrackBar(TrackBar bar)
@@ -46,14 +47,15 @@ namespace ImageProcessing
             InitializeComponent();
             //processingThread = new Thread(processImages);
             NetworkTable.setClientMode();
-           NetworkTable.setIPAddress("10.0.1.2");
+           NetworkTable.setIPAddress("10.38.24.2");
 
             table = NetworkTable.getTable("SmartDashboard");
 
             // The next three lines are for testing purposes only!
-            NetworkTable.getTable("SmartDashboard").putNumber("Last Shot Shooter RPM", 0);
-            NetworkTable.getTable("SmartDashboard").putNumber("Last Shot Shooter Angle", 0);
-            NetworkTable.getTable("SmartDashboard").putNumber("Shot Counter", 0);
+            //NetworkTable.getTable("SmartDashboard").putNumber("Last Shot Shooter RPM", 0);
+            //NetworkTable.getTable("SmartDashboard").putNumber("Last Shot Shooter Angle", 0);
+          //  NetworkTable.getTable("SmartDashboard").putNumber("Shot Counter", 0);
+            NetworkTable.getTable("SmartDashboard").putNumber("Match Number", 1);
 
              //capture = new Capture("rtsp://192.168.0.90:554/axis-media/media.amp");
 
@@ -255,17 +257,17 @@ namespace ImageProcessing
 
         private void captureImageData()
         {
-            //shotRPM = NetworkTable.getTable("SmartDashboard").getNumber("Last Shot Shooter RPM");
-            //shotAngle = NetworkTable.getTable("SmartDashboard").getNumber("Last Shot Shooter Angle");
+            shotRPM = NetworkTable.getTable("SmartDashboard").getNumber("Shooter Speed GIT");
+            shotAngle = NetworkTable.getTable("SmartDashboard").getNumber("Shooter Angle GIT");
 
             // the next two lines are in the correct order. DO NOT CHANGE!
             lastShotCounter = shotCounter;
-            //shotCounter = (int)NetworkTable.getTable("SmartDashboard").getNumber("Shot Counter");
+            shotCounter = (int)NetworkTable.getTable("SmartDashboard").getNumber("Shot Counter");
 
             // The next three lines are for testing purposes only!
-            shotCounter++;
-            shotRPM += 1000;
-            shotAngle += 2;
+           // shotCounter++;
+            //shotRPM += 1000;
+            //shotAngle += 2;
 
             if (lastShotCounter < shotCounter)
             {
@@ -275,11 +277,22 @@ namespace ImageProcessing
                 str_shot = "" + shotCounter + "\t" + capturedData[shotCounter, 0] + "\t" + capturedData[shotCounter, 1] + "\n";
 
                   // System.IO.File.WriteAllText(@"C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Image Saves\\shotData" + shotCounter + ".txt", str_shot);
-                -
-                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Shot Information\\shotData.txt", true))
+                
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Shot Information\\shotData Match " + matchNumber + ".txt", true))
                 {
                     file.WriteLine(str_shot);
                 }  
+            }
+
+            // Next Comment should work for matches instead of the if conditional.
+            
+           //if (shotCounter >= 249)            
+            if (lastShotCounter > shotCounter)
+            {
+                matchNumber = (int)NetworkTable.getTable("SmartDashboard").getNumber("Match Number");
+                shotCounter = 0;
+                shotRPM = 0;
+                shotAngle = 0;
             }
 
             
