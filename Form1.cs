@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing.Imaging;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -23,7 +24,6 @@ namespace ImageProcessing
     public partial class Form1 : Form
     {
        // FileStream shotInformation = File.Create("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Image Saves\\shotData.txt");
-        
         private NetworkTable table;
         private             Capture pickup_Capture;
         private             Capture target_Capture;
@@ -35,6 +35,9 @@ namespace ImageProcessing
         int lastShotCounter;
         int shotCounter = -1;
         int matchNumber = 1;
+
+        Image<Bgr, Byte> target_image;
+
         StringBuilder sb = new StringBuilder();
 
         public int readTrackBar(TrackBar bar)
@@ -54,19 +57,19 @@ namespace ImageProcessing
             // The next three lines are for testing purposes only!
             //NetworkTable.getTable("SmartDashboard").putNumber("Last Shot Shooter RPM", 0);
             //NetworkTable.getTable("SmartDashboard").putNumber("Last Shot Shooter Angle", 0);
-          //  NetworkTable.getTable("SmartDashboard").putNumber("Shot Counter", 0);
+            //NetworkTable.getTable("SmartDashboard").putNumber("Shot Counter", 0);
             NetworkTable.getTable("SmartDashboard").putNumber("Match Number", 1);
 
              //capture = new Capture("rtsp://192.168.0.90:554/axis-media/media.amp");
 
             // Setup Cameras to these IP addresses
             // Using two cameras gets rid of having to swap between both types of image processing
-            //pickup_Capture = new Capture("rtsp://10.0.1.5:554/axis-media/media.amp");
-            //target_Capture = new Capture("rtsp://192.168.0.90:554/axis-media/media.amp");
+            pickup_Capture = new Capture("rtsp://10.38.24.11:554/axis-media/media.amp");
+            target_Capture = new Capture("rtsp://10.38.24.11:554/axis-media/media.amp");
 
             //  This is for testing via webcam image.
-            pickup_Capture = new Capture();
-            target_Capture = new Capture();
+            //pickup_Capture = new Capture();
+            //target_Capture = new Capture();
             //target_Capture = new Capture();
             Application.Idle += processImage;
 
@@ -251,7 +254,7 @@ namespace ImageProcessing
 
             im_image_target.Image = image.ToBitmap();
 
-
+            target_image = image;
 
         }
 
@@ -265,10 +268,16 @@ namespace ImageProcessing
             shotCounter = (int)NetworkTable.getTable("SmartDashboard").getNumber("Shot Counter");
 
             // The next three lines are for testing purposes only!
-           // shotCounter++;
-            //shotRPM += 1000;
-            //shotAngle += 2;
-
+        /*    if (shotCounter < 5)
+            {
+                shotCounter++;
+            }
+            
+            if (lastShotCounter < shotCounter)
+            {
+                shotRPM += 1000;
+                shotAngle += 2;
+            }*/
             if (lastShotCounter < shotCounter)
             {
                 capturedData[shotCounter, 0] = shotRPM;
@@ -281,7 +290,8 @@ namespace ImageProcessing
                 using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Shot Information\\shotData Match " + matchNumber + ".txt", true))
                 {
                     file.WriteLine(str_shot);
-                }  
+                }
+                saveJpeg("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Shot Pictures Match " + matchNumber + "\\Shot " + shotCounter + ".jpeg", target_image.ToBitmap(), 100);
             }
 
             // Next Comment should work for matches instead of the if conditional.
@@ -389,6 +399,36 @@ namespace ImageProcessing
         private void pictureBox1_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void saveJpeg(string path, Bitmap img, long quality)
+        {
+            // Encoder parameter for image quality
+
+            EncoderParameter qualityParam = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
+
+            // Jpeg image codec
+            ImageCodecInfo jpegCodec = this.getEncoderInfo("image/jpeg");
+
+            if (jpegCodec == null)
+                return;
+
+            EncoderParameters encoderParams = new EncoderParameters(1);
+            encoderParams.Param[0] = qualityParam;
+
+            img.Save(path, jpegCodec, encoderParams);
+        }
+
+        private ImageCodecInfo getEncoderInfo(string mimeType)
+        {
+            // Get image codecs for all image formats
+            ImageCodecInfo[] codecs = ImageCodecInfo.GetImageEncoders();
+
+            // Find the correct image codec
+            for (int i = 0; i < codecs.Length; i++)
+                if (codecs[i].MimeType == mimeType)
+                    return codecs[i];
+            return null;
         }
     }
 
