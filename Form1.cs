@@ -313,13 +313,14 @@ namespace ImageProcessing
 
             // Next Comment should work for matches instead of the if conditional.
             
-            if (shotCounter >= 100)            
-            //if (lastShotCounter > shotCounter)
+            //if (shotCounter >= 100)            
+            if (lastShotCounter > shotCounter)
             {
                 matchNumber++;
                 shotCounter = 0;
-                shotRPM = 0;
-                shotAngle = 0;
+                NetworkTable.getTable("SmartDashboard").putNumber("Shot Counter", shotCounter);
+            //    shotRPM = 0;
+            //    shotAngle = 0;
             }
 
             
