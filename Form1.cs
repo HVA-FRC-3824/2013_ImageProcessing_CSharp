@@ -37,6 +37,7 @@ namespace ImageProcessing
         int matchNumber = 1;
 
         Image<Bgr, Byte> target_image;
+        Image<Bgr, Byte> pickup_image;
 
         StringBuilder sb = new StringBuilder();
 
@@ -57,8 +58,8 @@ namespace ImageProcessing
             // The next three lines are for testing purposes only!
             //NetworkTable.getTable("SmartDashboard").putNumber("Last Shot Shooter RPM", 0);
             //NetworkTable.getTable("SmartDashboard").putNumber("Last Shot Shooter Angle", 0);
-            //NetworkTable.getTable("SmartDashboard").putNumber("Shot Counter", 0);
-            NetworkTable.getTable("SmartDashboard").putNumber("Match Number", 1);
+           // NetworkTable.getTable("SmartDashboard").putNumber("Shot Counter", 0);
+            //NetworkTable.getTable("SmartDashboard").putNumber("Match Number", 1);
 
              //capture = new Capture("rtsp://192.168.0.90:554/axis-media/media.amp");
 
@@ -69,7 +70,6 @@ namespace ImageProcessing
 
             //  This is for testing via webcam image.
             //pickup_Capture = new Capture();
-            //target_Capture = new Capture();
             //target_Capture = new Capture();
             Application.Idle += processImage;
 
@@ -172,7 +172,8 @@ namespace ImageProcessing
             im_mask_frisbee.Image = mask.ToBitmap();
                 
             im_image_frisbee.Image = image.ToBitmap();
-            
+
+            pickup_image = image;
 
             
         }
@@ -268,7 +269,7 @@ namespace ImageProcessing
             shotCounter = (int)NetworkTable.getTable("SmartDashboard").getNumber("Shot Counter");
 
             // The next three lines are for testing purposes only!
-        /*    if (shotCounter < 5)
+            /*if (shotCounter < 5)
             {
                 shotCounter++;
             }
@@ -283,23 +284,39 @@ namespace ImageProcessing
                 capturedData[shotCounter, 0] = shotRPM;
                 capturedData[shotCounter, 1] = shotAngle;
 
-                str_shot = "" + shotCounter + "\t" + capturedData[shotCounter, 0] + "\t" + capturedData[shotCounter, 1] + "\n";
+                str_shot = "Shot:\t" + shotCounter + "\tRPM:\t" + capturedData[shotCounter, 0] + "\tAngle:\t" + capturedData[shotCounter, 1] + "\n";
 
                   // System.IO.File.WriteAllText(@"C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Image Saves\\shotData" + shotCounter + ".txt", str_shot);
-                
-                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Shot Information\\shotData Match " + matchNumber + ".txt", true))
+                if (Directory.Exists("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber) == false)
+                {
+                    Directory.CreateDirectory("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber);
+                }
+                using (System.IO.StreamWriter file = new System.IO.StreamWriter(@"C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Data.txt", true))
                 {
                     file.WriteLine(str_shot);
                 }
-                saveJpeg("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Shot Pictures Match " + matchNumber + "\\Shot " + shotCounter + ".jpeg", target_image.ToBitmap(), 100);
+                if (Directory.Exists("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image") == false)
+                {
+                    Directory.CreateDirectory("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image");
+                }
+                if (Directory.Exists("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Target") == false)
+                {
+                    Directory.CreateDirectory("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Target");
+                }
+                if (Directory.Exists("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Pickup") == false)
+                {
+                    Directory.CreateDirectory("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Pickup");
+                }
+                saveJpeg("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Target\\Shot " + shotCounter + " .jpeg", target_image.ToBitmap(), 100);
+                saveJpeg("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Pickup\\Shot " + shotCounter + " .jpeg", pickup_image.ToBitmap(), 100);
             }
 
             // Next Comment should work for matches instead of the if conditional.
             
-           //if (shotCounter >= 249)            
-            if (lastShotCounter > shotCounter)
+            if (shotCounter >= 100)            
+            //if (lastShotCounter > shotCounter)
             {
-                matchNumber = (int)NetworkTable.getTable("SmartDashboard").getNumber("Match Number");
+                matchNumber++;
                 shotCounter = 0;
                 shotRPM = 0;
                 shotAngle = 0;
