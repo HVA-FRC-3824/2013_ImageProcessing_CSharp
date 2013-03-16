@@ -16,7 +16,7 @@ using Emgu.CV.Structure;
 using Emgu.Util;
 using Emgu.CV.UI;
 using System.Threading;
-
+using System.Media;
 
 
 namespace ImageProcessing
@@ -35,7 +35,10 @@ namespace ImageProcessing
         int lastShotCounter;
         int shotCounter = -1;
         int matchNumber = 1;
-
+        SoundPlayer a1_34K = new SoundPlayer("C:\\WindRiver" + 
+            "\\workspace\\" + 
+            "ImageProcessing2013CSharp\\" + 
+            "a.ap3");
         Image<Bgr, Byte> target_image;
         Image<Bgr, Byte> pickup_image;
 
@@ -65,12 +68,12 @@ namespace ImageProcessing
 
             // Setup Cameras to these IP addresses
             // Using two cameras gets rid of having to swap between both types of image processing
-            pickup_Capture = new Capture("rtsp://10.38.24.11:554/axis-media/media.amp");
-            target_Capture = new Capture("rtsp://10.38.24.11:554/axis-media/media.amp");
+            //pickup_Capture = new Capture("rtsp://10.38.24.11:554/axis-media/media.amp");
+            //target_Capture = new Capture("rtsp://10.38.24.11:554/axis-media/media.amp");
 
             //  This is for testing via webcam image.
-            //pickup_Capture = new Capture();
-            //target_Capture = new Capture();
+            pickup_Capture = new Capture();
+            target_Capture = new Capture();
             Application.Idle += processImage;
 
         }
@@ -269,7 +272,7 @@ namespace ImageProcessing
             shotCounter = (int)NetworkTable.getTable("SmartDashboard").getNumber("Shot Counter");
 
             // The next three lines are for testing purposes only!
-            /*if (shotCounter < 5)
+          /*  if (shotCounter < 2)
             {
                 shotCounter++;
             }
@@ -309,6 +312,7 @@ namespace ImageProcessing
                 }
                 saveJpeg("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Target\\Shot " + shotCounter + " .jpeg", target_image.ToBitmap(), 100);
                 saveJpeg("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Pickup\\Shot " + shotCounter + " .jpeg", pickup_image.ToBitmap(), 100);
+                a1_34K.Play();
             }
 
             // Next Comment should work for matches instead of the if conditional.
