@@ -17,7 +17,7 @@ using Emgu.Util;
 using Emgu.CV.UI;
 using System.Threading;
 using System.Media;
-
+using System.Reflection;
 
 namespace ImageProcessing
 {
@@ -27,6 +27,8 @@ namespace ImageProcessing
         private NetworkTable table;
         private             Capture pickup_Capture;
         private             Capture target_Capture;
+        SoundPlayer asdf = new SoundPlayer();
+        
         public delegate int readTrackBarDelegate(TrackBar bar);
         private double[,] capturedData = new double[250,2];
         string str_shot;
@@ -35,10 +37,7 @@ namespace ImageProcessing
         int lastShotCounter;
         int shotCounter = -1;
         int matchNumber = 1;
-        SoundPlayer a1_34K = new SoundPlayer("C:\\WindRiver" + 
-            "\\workspace\\" + 
-            "ImageProcessing2013CSharp\\" + 
-            "a.ap3");
+        
         Image<Bgr, Byte> target_image;
         Image<Bgr, Byte> pickup_image;
 
@@ -51,6 +50,7 @@ namespace ImageProcessing
 
         public Form1()
         {
+            asdf.Stream = Properties.Resources.a;
             InitializeComponent();
             //processingThread = new Thread(processImages);
             NetworkTable.setClientMode();
@@ -68,12 +68,12 @@ namespace ImageProcessing
 
             // Setup Cameras to these IP addresses
             // Using two cameras gets rid of having to swap between both types of image processing
-            //pickup_Capture = new Capture("rtsp://10.38.24.11:554/axis-media/media.amp");
-            //target_Capture = new Capture("rtsp://10.38.24.11:554/axis-media/media.amp");
+            pickup_Capture = new Capture("rtsp://10.38.24.11:554/axis-media/media.amp");
+            target_Capture = new Capture("rtsp://10.38.24.11:554/axis-media/media.amp");
 
             //  This is for testing via webcam image.
-            pickup_Capture = new Capture();
-            target_Capture = new Capture();
+            //pickup_Capture = new Capture();
+            //target_Capture = new Capture();
             Application.Idle += processImage;
 
         }
@@ -264,8 +264,8 @@ namespace ImageProcessing
 
         private void captureImageData()
         {
-            shotRPM = NetworkTable.getTable("SmartDashboard").getNumber("Shooter Speed GIT");
-            shotAngle = NetworkTable.getTable("SmartDashboard").getNumber("Shooter Angle GIT");
+            shotRPM = NetworkTable.getTable("SmartDashboard").getNumber("Shooter Speed");
+            shotAngle = NetworkTable.getTable("SmartDashboard").getNumber("Shooter Angle");
 
             // the next two lines are in the correct order. DO NOT CHANGE!
             lastShotCounter = shotCounter;
@@ -311,8 +311,7 @@ namespace ImageProcessing
                     Directory.CreateDirectory("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Pickup");
                 }
                 saveJpeg("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Target\\Shot " + shotCounter + " .jpeg", target_image.ToBitmap(), 100);
-                saveJpeg("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Pickup\\Shot " + shotCounter + " .jpeg", pickup_image.ToBitmap(), 100);
-                a1_34K.Play();
+                saveJpeg("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Pickup\\Shot " + shotCounter + " .jpeg", pickup_image.ToBitmap(), 100);asdf.Play();
             }
 
             // Next Comment should work for matches instead of the if conditional.
