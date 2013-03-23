@@ -23,7 +23,6 @@ namespace ImageProcessing
 {
     public partial class Form1 : Form
     {
-       // FileStream shotInformation = File.Create("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Image Saves\\shotData.txt");
         private NetworkTable table;
         private             Capture pickup_Capture;
         private             Capture target_Capture;
@@ -60,13 +59,6 @@ namespace ImageProcessing
 
             table = NetworkTable.getTable("SmartDashboard");
 
-            // The next three lines are for testing purposes only!
-            //NetworkTable.getTable("SmartDashboard").putNumber("Last Shot Shooter RPM", 0);
-            //NetworkTable.getTable("SmartDashboard").putNumber("Last Shot Shooter Angle", 0);
-           // NetworkTable.getTable("SmartDashboard").putNumber("Shot Counter", 0);
-            //NetworkTable.getTable("SmartDashboard").putNumber("Match Number", 1);
-
-             //capture = new Capture("rtsp://192.168.0.90:554/axis-media/media.amp");
 
             // Setup Cameras to these IP addresses
             // Using two cameras gets rid of having to swap between both types of image processing
@@ -155,10 +147,6 @@ namespace ImageProcessing
             {
                 image.Draw(ellList[n], new Bgr(255, 21, 255), 2);
             }
-            //Console.Write(minCenter);
-            //MessageBox.Show("Pos:" + (boxList[centerRectNum].X + boxList[centerRectNum].Width/2.0)+"distance: "+minCenter);
-            //MessageBox.Show("Off by:" + (boxList[centerRectNum].X + boxList[centerRectNum].Width / 2.0 - imageWidth/2));
-                
 
             // Print out the information about the first rect
             if (boxList.Count != 0)
@@ -195,8 +183,6 @@ namespace ImageProcessing
             // Convert the image to hsv
             hsvImage = image.Convert<Hsv, byte>();
 
-            //mask = hsvImage.InRange(new Hsv(130.0 / 2, 25.0, 30.0), new Hsv(150.0 / 2, 255.0, 255.0));
-            //mask = hsvImage.InRange(new Hsv(hMin, sMin, vMin), new Hsv(hMax, sMax, vMax));
             mask = hsvImage.InRange(new Hsv((int)(103 / 240.0f * 180),
                         (int)(100 / 240.0f * 255),
                         (int)(150 / 240.0f * 255)),
@@ -204,12 +190,9 @@ namespace ImageProcessing
                         (int)(240 / 240.0f * 255),
                         (int)(240 / 240.0f * 255)));
             // Filter image
-            //mask._Erode(4);
             mask._Dilate(4);
             mask._Erode(4);
 
-            // Find the Rectangles
-            //contours = mask.FindContours(Emgu.CV.CvEnum.CHAIN_APPROX_METHOD.CV_CHAIN_APPROX_SIMPLE, Emgu.CV.CvEnum.RETR_TYPE.CV_RETR_TREE);
 
             // List of boxes found
             List<Rectangle> boxList = new List<Rectangle>();
@@ -239,10 +222,6 @@ namespace ImageProcessing
                     centerRectNum = n;
                 }
             }
-
-            //Console.Write(minCenter);
-            //MessageBox.Show("Pos:" + (boxList[centerRectNum].X + boxList[centerRectNum].Width/2.0)+"distance: "+minCenter);
-            //MessageBox.Show("Off by:" + (boxList[centerRectNum].X + boxList[centerRectNum].Width / 2.0 - imageWidth/2));
 
 
             // Print out the information about the first rect
@@ -276,7 +255,7 @@ namespace ImageProcessing
             lastPickupCount = pickupCount;
             pickupCount = (int)NetworkTable.getTable("SmartDashboard").getNumber("Pickup Counter");
             matchNumber = (int)NetworkTable.getTable("SmartDashboard").getNumber("Match Counter");
-            // The next three lines are for testing purposes only!
+
           /*  if (shotCounter < 2)
             {
                 shotCounter++;
@@ -294,7 +273,6 @@ namespace ImageProcessing
 
                 str_shot = "Shot:\t" + shotCounter + "\tRPM:\t" + capturedData[shotCounter, 0] + "\tAngle:\t" + capturedData[shotCounter, 1] + "\n";
 
-                  // System.IO.File.WriteAllText(@"C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Image Saves\\shotData" + shotCounter + ".txt", str_shot);
                 if (Directory.Exists("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber) == false)
                 {
                     Directory.CreateDirectory("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber);
@@ -320,7 +298,6 @@ namespace ImageProcessing
                 {
                     Directory.CreateDirectory("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber);
                 }
-
                 if (Directory.Exists("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image") == false)
                 {
                     Directory.CreateDirectory("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image");
@@ -337,7 +314,6 @@ namespace ImageProcessing
 
         private void btn_start_Click(object sender, EventArgs e)
         {
-//            processingThread.Start();
         }
 
         #region TrackBar Value Changed
