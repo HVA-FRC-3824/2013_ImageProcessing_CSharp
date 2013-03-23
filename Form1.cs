@@ -36,7 +36,9 @@ namespace ImageProcessing
         double shotAngle = 0;
         int lastShotCounter;
         int shotCounter = -1;
-        int matchNumber = 1;
+        int matchNumber;
+        int pickupCount = 0;
+        int lastPickupCount;
         
         Image<Bgr, Byte> target_image;
         Image<Bgr, Byte> pickup_image;
@@ -265,12 +267,15 @@ namespace ImageProcessing
         private void captureImageData()
         {
             shotRPM = NetworkTable.getTable("SmartDashboard").getNumber("Shooter Speed");
-            shotAngle = NetworkTable.getTable("SmartDashboard").getNumber("Shooter Angle");
+            shotAngle = NetworkTable.getTable("SmartDashboard").getNumber("Shooter Angle Degrees");
 
             // the next two lines are in the correct order. DO NOT CHANGE!
             lastShotCounter = shotCounter;
             shotCounter = (int)NetworkTable.getTable("SmartDashboard").getNumber("Shot Counter");
 
+            lastPickupCount = pickupCount;
+            pickupCount = (int)NetworkTable.getTable("SmartDashboard").getNumber("Pickup Counter");
+            matchNumber = (int)NetworkTable.getTable("SmartDashboard").getNumber("Match Counter");
             // The next three lines are for testing purposes only!
           /*  if (shotCounter < 2)
             {
@@ -306,24 +311,25 @@ namespace ImageProcessing
                 {
                     Directory.CreateDirectory("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Target");
                 }
+                saveJpeg("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Target\\Shot " + shotCounter + " .jpeg", target_image.ToBitmap(), 100);asdf.Play();
+            }
+
+            if (lastPickupCount < pickupCount)
+            {
+                if (Directory.Exists("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber) == false)
+                {
+                    Directory.CreateDirectory("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber);
+                }
+
+                if (Directory.Exists("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image") == false)
+                {
+                    Directory.CreateDirectory("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image");
+                }
                 if (Directory.Exists("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Pickup") == false)
                 {
                     Directory.CreateDirectory("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Pickup");
                 }
-                saveJpeg("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Target\\Shot " + shotCounter + " .jpeg", target_image.ToBitmap(), 100);
-                saveJpeg("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Pickup\\Shot " + shotCounter + " .jpeg", pickup_image.ToBitmap(), 100);asdf.Play();
-            }
-
-            // Next Comment should work for matches instead of the if conditional.
-            
-            //if (shotCounter >= 100)            
-            if (lastShotCounter > shotCounter)
-            {
-                matchNumber++;
-                shotCounter = 0;
-                NetworkTable.getTable("SmartDashboard").putNumber("Shot Counter", shotCounter);
-            //    shotRPM = 0;
-            //    shotAngle = 0;
+                saveJpeg("C:\\WindRiver\\workspace\\ImageProcessing2013CSharp\\Match " + matchNumber + "\\Shot Image\\Pickup\\Pickup " + pickupCount + ".jpeg", pickup_image.ToBitmap(), 100); asdf.Play();
             }
 
             
